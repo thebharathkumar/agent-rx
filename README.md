@@ -8,6 +8,8 @@
 
 [agent-triage](https://github.com/thebharathkumar/agent-triage) answers *"what should I look at this morning?"* It ranks multi-agent trace failures by severity. The obvious next question is *"so what do I do about it, and did it actually help?"* `agent-rx` is that next step: a closed remediation loop that consumes a triage-style ranking, proposes a fix from a constrained action space, A/B-tests the fix against the unpatched system, and accepts it only on a statistically significant improvement. A learned prioritizer decides which incidents are worth a fix attempt in the first place, and it trains on the loop's own outcomes.
 
+![agent-rx remediation loop](docs/loop.png)
+
 The headline run, fully reproducible offline with `agent-rx demo`:
 
 ```
@@ -15,6 +17,12 @@ failure rate 49.9% -> 15.0% (-70%), p < 0.0001 (significant)
 4 fixes accepted, 100% targeted the correct ground-truth lever
 prioritizer: learned model AUC 0.99 vs heuristic prior 0.94 on a held-out split
 ```
+
+These numbers come from a bundled, synthetic multi-agent task with known
+ground-truth fixes, not production traffic. That is a deliberate choice (you
+can only verify a fix is correct when you know the right answer); see
+[What is real and what is not](#what-is-real-and-what-is-not). The machinery
+is general and also runs read-only over real traces via `agent-rx analyze`.
 
 ---
 
