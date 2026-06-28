@@ -44,7 +44,9 @@ def random_buggy_config(rng: random.Random) -> RunConfig:
 
 def _failures(cfg: RunConfig, runs: int, turns: int, seed: int) -> tuple[int, int]:
     events = simulate(cfg, num_runs=runs, num_turns=turns, seed=seed)
-    fail = sum(1 for e in events if (not e.action_succeeded) or e.failure_classification is not None)
+    fail = sum(
+        1 for e in events if (not e.action_succeeded) or e.failure_classification is not None
+    )
     return fail, len(events)
 
 

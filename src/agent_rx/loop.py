@@ -16,7 +16,7 @@ incidents, so a fix has to generalize, not just fit the batch it was found in.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from agent_rx.actions import Patch
 from agent_rx.environment import GROUND_TRUTH_FIX, simulate

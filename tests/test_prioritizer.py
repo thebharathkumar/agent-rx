@@ -6,8 +6,8 @@ from agent_rx.prioritizer import (
     extract_features,
     heuristic_score,
 )
-from agent_rx.severity import score_events
 from agent_rx.schema import TraceEvent
+from agent_rx.severity import score_events
 
 
 def _incident(cls="coordination_failure"):

@@ -20,6 +20,7 @@ it is in.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Any
 
 from agent_rx.severity import CLASSIFICATION_WEIGHTS, ScoredIncident
 
@@ -83,10 +84,10 @@ class _LogReg:
     l2: float = 1.0
     lr: float = 0.2
     epochs: int = 600
-    weights: object = None
+    weights: Any = None
     bias: float = 0.0
-    mean: object = None
-    std: object = None
+    mean: Any = None
+    std: Any = None
 
     def fit(self, X: list[list[float]], y: list[int]) -> None:
         import numpy as np

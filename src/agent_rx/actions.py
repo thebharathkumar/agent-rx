@@ -12,8 +12,8 @@ chosen lever matches the environment's ground truth.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 from agent_rx.schema import RunConfig
 
