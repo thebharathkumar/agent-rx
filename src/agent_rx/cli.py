@@ -8,7 +8,8 @@ import click
 
 from agent_rx.environment import simulate
 from agent_rx.loop import run_loop
-from agent_rx.reporter import render_report
+from agent_rx.prioritizer import Prioritizer
+from agent_rx.reporter import render_plan, render_report
 from agent_rx.schema import RunConfig, write_ndjson
 
 
@@ -50,6 +51,37 @@ def train(episodes: int, test_frac: float) -> None:
     ds = generate_dataset(n_episodes=episodes)
     _, report = train_and_evaluate(ds, test_frac=test_frac)
     click.echo(report.summary())
+
+
+@main.command()
+@click.argument("paths", nargs=-1, required=True, type=click.Path(exists=True))
+@click.option("--top", default=5, show_default=True, help="How many incidents to recommend.")
+@click.option("--pretrain/--no-pretrain", default=False,
+              help="Pretrain the prioritizer offline for learned ranking.")
+@click.option("--output", type=click.Path(), default=None, help="Write the plan to a file.")
+def analyze(paths: tuple[str, ...], top: int, pretrain: bool, output: str | None) -> None:
+    """Analyze real NDJSON traces and print a prioritized remediation plan."""
+    from agent_rx.analyze import analyze_events, load_paths
+
+    events, errors = load_paths(list(paths))
+    for err in errors:
+        click.echo(f"warning: {err}", err=True)
+    if not events:
+        raise click.ClickException("No events loaded. Check the paths and format.")
+
+    prioritizer: Prioritizer | None = None
+    if pretrain:
+        from agent_rx.training import generate_dataset, train_and_evaluate
+
+        prioritizer, _ = train_and_evaluate(generate_dataset())
+
+    report = analyze_events(events, prioritizer=prioritizer, top=top)
+    plan = render_plan(report)
+    if output:
+        Path(output).write_text(plan, encoding="utf-8")
+        click.echo(f"Wrote plan to {output}")
+    else:
+        click.echo(plan)
 
 
 @main.command()

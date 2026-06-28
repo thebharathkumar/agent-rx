@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from agent_rx.analyze import AnalysisReport
 from agent_rx.loop import LoopResult
 
 
@@ -60,5 +61,40 @@ def render_report(result: LoopResult) -> str:
             f"Heuristic-only AUC on the log: {m['auc_heuristic']:.2f} "
             "(not enough labels yet to train the learned model).\n"
         )
+
+    return "\n".join(lines)
+
+
+def render_plan(report: AnalysisReport) -> str:
+    """Render a prioritized remediation plan from a real-trace analysis."""
+    lines: list[str] = []
+    lines.append("# agent-rx remediation plan\n")
+    lines.append(
+        f"Analyzed **{report.n_events}** events, found **{report.n_incidents}** "
+        f"incident patterns at a **{report.failure_rate:.1%}** failure rate. "
+        f"Ranked by the **{report.regime}** prioritizer (expected fix value).\n"
+    )
+    lines.append(
+        "> Read-only mode: these are recommended fixes ranked by priority. "
+        "Verification (the A/B significance gate) requires re-running the system "
+        "under each patch, which static trace files can't provide.\n"
+    )
+
+    lines.append("| # | priority | incident | recovery | confidence | recommended fix |")
+    lines.append("|---|----------|----------|----------|------------|-----------------|")
+    for rec in report.recommendations:
+        inc = rec.incident
+        fix = rec.proposal.patch.action_id if rec.proposal else "no action (self-resolving)"
+        lines.append(
+            f"| {rec.rank} | {rec.priority:.2f} | {inc.display_name()} | "
+            f"{inc.recovery_rate:.0%} | {inc.confidence_label} | `{fix}` |"
+        )
+    lines.append("")
+
+    for rec in report.recommendations:
+        if rec.proposal is None:
+            continue
+        lines.append(f"**#{rec.rank} {rec.incident.display_name()}** — {rec.proposal.rationale}")
+        lines.append("")
 
     return "\n".join(lines)

@@ -81,6 +81,24 @@ export ANTHROPIC_API_KEY=sk-ant-...
 agent-rx run --llm
 ```
 
+### Run it on real traces
+
+`agent-rx analyze` runs the diagnose + prioritize + recommend half of the loop
+over real trace files (anything in the agent-triage NDJSON schema, including
+real [dungeon-traces](https://github.com/thebharathkumar/dungeon-traces)
+output). It produces a ranked remediation plan:
+
+```bash
+agent-rx analyze runs/*.ndjson --top 5            # heuristic ranking
+agent-rx analyze runs/ --pretrain                  # learned-prioritizer ranking
+```
+
+This is **read-only by design**: it recommends fixes ranked by expected value,
+but does not A/B-test them. Verification (the significance gate) needs a
+re-runnable system, which static files can't provide, so the closed loop with
+acceptance runs against the bundled environment (`agent-rx demo`). A sample plan
+is at [`examples/remediation-plan.md`](examples/remediation-plan.md).
+
 ### Interop with agent-triage
 
 The environment emits NDJSON in the exact agent-triage schema, so the two tools share data:
@@ -145,7 +163,8 @@ What that means for reading the results:
 | `stats.py` | Two-proportion z-test (normal CDF via `math.erfc`), with a tentative flag for small samples. |
 | `loop.py` | Orchestrates diagnose, propose, A/B, accept/reject, log, retrain. |
 | `reporter.py` | Render the markdown remediation report. |
-| `cli.py` | `demo`, `run`, `train`, `trace`. |
+| `analyze.py` | Read-only mode over real trace files: load, score, prioritize, recommend (no A/B). |
+| `cli.py` | `demo`, `run`, `train`, `analyze`, `trace`. |
 
 ---
 
@@ -172,7 +191,7 @@ The dataset is small and the value is in showing the modeling explicitly: standa
 
 ```bash
 pip install -e ".[dev]"
-pytest --cov=agent_rx     # 26 tests
+pytest --cov=agent_rx     # 30 tests
 ruff check src tests
 mypy src/agent_rx
 ```
