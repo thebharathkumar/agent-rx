@@ -70,3 +70,11 @@ mypy_path = "src"
 explicit_package_bases = true
 namespace_packages = true
 ignore_missing_imports = true
+
+# numpy>=2.3 ships PEP 695 (`type X = ...`) stubs that only parse under
+# Python 3.12+. We target 3.10, and all numpy-touching values are typed Any,
+# so skip numpy's stubs entirely rather than raise the target version.
+[[tool.mypy.overrides]]
+module = ["numpy", "numpy.*"]
+follow_imports = "skip"
+follow_imports_for_stubs = true
