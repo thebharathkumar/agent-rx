@@ -1,0 +1,69 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agent-rx"
+version = "0.1.0"
+description = "Close the loop on agent-triage: diagnose, propose, A/B-test, and accept fixes for multi-agent failures - with a learned prioritizer."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "Bharath kumar R"}]
+keywords = [
+    "agents", "multi-agent", "llm", "observability", "remediation",
+    "self-healing", "reinforcement", "online-learning", "anthropic", "claude",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = [
+    "click>=8.1,<9",
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+ai = ["anthropic>=0.40,<2"]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "anthropic>=0.40,<2",
+    "ruff",
+    "mypy",
+]
+
+[project.urls]
+Homepage = "https://github.com/thebharathkumar/agent-rx"
+Repository = "https://github.com/thebharathkumar/agent-rx"
+"Companion project" = "https://github.com/thebharathkumar/agent-triage"
+
+[project.scripts]
+agent-rx = "agent_rx.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agent_rx"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "--tb=short"
+
+[tool.coverage.run]
+source = ["src/agent_rx"]
+omit = ["*/cli.py"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.10"
+files = ["src/agent_rx"]
+ignore_missing_imports = true
