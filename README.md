@@ -6,6 +6,13 @@
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
+<!-- brag:start -->
+<p align="center">
+  <a href="https://github.com/thebharathkumar/agent-rx/blob/HEAD/docs/brag/agent-rx.mp4"><img src="https://raw.githubusercontent.com/thebharathkumar/agent-rx/HEAD/docs/brag/agent-rx.gif" alt="agent-rx: 14-second technical brief" width="100%"></a>
+</p>
+<p align="center"><sub>14-second technical brief. <a href="https://github.com/thebharathkumar/agent-rx/blob/HEAD/docs/brag/agent-rx.mp4">Full MP4 with sound</a> &middot; more at <a href="https://thebharath.co">thebharath.co</a></sub></p>
+<!-- brag:end -->
+
 [agent-triage](https://github.com/thebharathkumar/agent-triage) answers *"what should I look at this morning?"* It ranks multi-agent trace failures by severity. The obvious next question is *"so what do I do about it, and did it actually help?"* `agent-rx` is that next step: a closed remediation loop that consumes a triage-style ranking, proposes a fix from a constrained action space, A/B-tests the fix against the unpatched system, and accepts it only on a statistically significant improvement. A learned prioritizer decides which incidents are worth a fix attempt in the first place, and it trains on the loop's own outcomes.
 
 ![agent-rx remediation loop](docs/loop.png)
